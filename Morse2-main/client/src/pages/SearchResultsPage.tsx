@@ -1,4 +1,4 @@
-import { BottomNav } from "@/components/BottomNav";
+import { UserButton } from "@clerk/clerk-react";
 import { Link, useLocation } from "wouter";
 import { Search, Users, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,6 +14,12 @@ export const SearchResultsPage = (): JSX.Element => {
   
   const { data: searchResults = [], isLoading } = useSearchUsers(searchQuery);
 
+  const navTabs = [
+    { name: "Broadcast", path: "/broadcast", active: false },
+    { name: "Messages", path: "/messages", active: false },
+    { name: "New launches", path: "/launches", active: false },
+    { name: "Communities", path: "/communities", active: false },
+  ];
 
   const handleSearch = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && searchQuery.length >= 2) {
@@ -25,7 +31,7 @@ export const SearchResultsPage = (): JSX.Element => {
     <div className="bg-[#1a1a1a] w-full min-h-screen flex flex-col">
       <header className="w-full px-8 py-4 flex items-center justify-between border-b border-gray-800">
         <Link href="/dashboard">
-          <div className="text-white text-3xl sm:text-5xl font-bold cursor-pointer" data-testid="link-logo" style={{ fontFamily: "'Arimo', sans-serif" }}>
+          <div className="text-white text-4xl font-bold cursor-pointer" data-testid="link-logo" style={{ fontFamily: "'Arimo', sans-serif" }}>
             .--.
           </div>
         </Link>
@@ -116,7 +122,23 @@ export const SearchResultsPage = (): JSX.Element => {
         </div>
       </div>
 
-      <BottomNav />
+      <footer className="w-full px-8 py-4 flex items-center justify-center gap-4 border-t border-gray-800">
+        {navTabs.map((tab) => (
+          <Link key={tab.name} href={tab.path}>
+            <Button
+              variant="outline"
+              className="bg-[#3a3a3a] border-gray-600 text-white hover:bg-gray-600 rounded-lg px-6"
+              data-testid={`button-nav-${tab.name.toLowerCase().replace(/\s/g, '-')}`}
+            >
+              {tab.name}
+            </Button>
+          </Link>
+        ))}
+        <Link href="/profile">
+          <span className="text-white ml-4 cursor-pointer hover:text-gray-300" data-testid="link-profile">Profile</span>
+        </Link>
+        <UserButton afterSignOutUrl="/" />
+      </footer>
     </div>
   );
 };

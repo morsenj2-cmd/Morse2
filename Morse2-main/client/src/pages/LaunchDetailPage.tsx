@@ -1,4 +1,4 @@
-import { BottomNav } from "@/components/BottomNav";
+import { UserButton } from "@clerk/clerk-react";
 import { Link, useParams } from "wouter";
 import { ChevronUp, Heart, User, Rocket, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,12 @@ export const LaunchDetailPage = (): JSX.Element => {
   const launch = launches.find((l: any) => l.id === params.id);
   const isCreator = currentUser?.id === launch?.creatorId;
 
+  const navTabs = [
+    { name: "Broadcast", path: "/broadcast", active: false },
+    { name: "Messages", path: "/messages", active: false },
+    { name: "New launches", path: "/launches", active: true },
+    { name: "Communities", path: "/communities", active: false },
+  ];
 
   const handleUpvote = async () => {
     if (params.id) {
@@ -59,7 +65,7 @@ export const LaunchDetailPage = (): JSX.Element => {
       {/* Header */}
       <header className="w-full px-8 py-4 flex items-center justify-between border-b border-gray-800">
         <Link href="/dashboard">
-          <div className="text-white text-3xl sm:text-5xl font-bold cursor-pointer" data-testid="link-logo" style={{ fontFamily: "'Arimo', sans-serif" }}>
+          <div className="text-white text-4xl font-bold cursor-pointer" data-testid="link-logo" style={{ fontFamily: "'Arimo', sans-serif" }}>
             .--.
           </div>
         </Link>
@@ -153,7 +159,24 @@ export const LaunchDetailPage = (): JSX.Element => {
         </div>
       </div>
 
-      <BottomNav activePage="New launches" />
+      {/* Bottom Navigation */}
+      <footer className="w-full px-8 py-4 flex items-center justify-center gap-4 border-t border-gray-800">
+        {navTabs.map((tab) => (
+          <Link key={tab.name} href={tab.path}>
+            <Button
+              variant="outline"
+              className={`${tab.active ? "bg-teal-700 border-teal-600" : "bg-[#3a3a3a] border-gray-600"} text-white hover:bg-gray-600 rounded-lg px-6`}
+              data-testid={`button-nav-${tab.name.toLowerCase().replace(/\s/g, '-')}`}
+            >
+              {tab.name}
+            </Button>
+          </Link>
+        ))}
+        <Link href="/profile">
+          <span className="text-white ml-4 cursor-pointer hover:text-gray-300" data-testid="link-profile">Profile</span>
+        </Link>
+        <UserButton afterSignOutUrl="/" />
+      </footer>
     </div>
   );
 };
