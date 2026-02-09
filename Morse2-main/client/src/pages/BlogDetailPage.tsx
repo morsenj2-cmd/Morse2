@@ -7,7 +7,8 @@ import { ArrowLeft, Calendar, User } from "lucide-react";
 import { format } from "date-fns";
 
 export const BlogDetailPage = (): JSX.Element => {
-  const { isSignedIn } = useUser();
+  const { isSignedIn, user } = useUser();
+  const isAdmin = user?.primaryEmailAddress?.emailAddress === "prayagbiju78@gmail.com";
   const [, params] = useRoute("/blog/:slug");
   const slug = params?.slug || "";
   const { data: post, isLoading } = useBlogPost(slug);
@@ -102,7 +103,7 @@ export const BlogDetailPage = (): JSX.Element => {
           )}
         </div>
       </main>
-      {isSignedIn && <BottomNav activePage="/blog" />}
+      {isSignedIn && isAdmin && <BottomNav activePage="/blog" />}
     </div>
   );
 };

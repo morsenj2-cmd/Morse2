@@ -1,8 +1,10 @@
-import { UserButton } from "@clerk/clerk-react";
+import { UserButton, useUser } from "@clerk/clerk-react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
+
+const ADMIN_EMAIL = "prayagbiju78@gmail.com";
 
 interface BottomNavProps {
   activePage?: string;
@@ -12,12 +14,34 @@ export const BottomNav = ({ activePage }: BottomNavProps): JSX.Element => {
   const [location] = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { user } = useUser();
 
-  const hamburgerItems = [
-    { name: "Broadcast", path: "/broadcast" },
-    { name: "New launches", path: "/launches" },
-    { name: "Blog", path: "/blog" },
-  ];
+  const isAdmin = user?.primaryEmailAddress?.emailAddress === ADMIN_EMAIL;
+
+  const hamburgerItems = useMemo(() => {
+    const items = [
+      { name: "Broadcast", path: "/broadcast" },
+      { name: "New launches", path: "/launches" },
+    ];
+    if (isAdmin) {
+      items.push({ name: "Blog", path: "/blog" });
+    }
+    return items;
+  }, [isAdmin]);
+
+  const desktopItems = useMemo(() => {
+    const items = [
+      { name: "Broadcast", path: "/broadcast" },
+      { name: "Messages", path: "/messages" },
+      { name: "Home", path: "/dashboard" },
+      { name: "New launches", path: "/launches" },
+      { name: "Communities", path: "/communities" },
+    ];
+    if (isAdmin) {
+      items.push({ name: "Blog", path: "/blog" });
+    }
+    return items;
+  }, [isAdmin]);
 
   const isActive = (path: string) => {
     return activePage === path || location === path;
@@ -107,16 +131,9 @@ export const BottomNav = ({ activePage }: BottomNavProps): JSX.Element => {
           </div>
         </div>
 
-        {/* Desktop bottom nav - unchanged */}
+        {/* Desktop bottom nav */}
         <div className="hidden sm:flex items-center justify-center px-8 py-4 gap-4">
-          {[
-            { name: "Broadcast", path: "/broadcast" },
-            { name: "Messages", path: "/messages" },
-            { name: "Home", path: "/dashboard" },
-            { name: "New launches", path: "/launches" },
-            { name: "Communities", path: "/communities" },
-            { name: "Blog", path: "/blog" },
-          ].map((tab) => (
+          {desktopItems.map((tab) => (
             <Link key={tab.name} href={tab.path}>
               <Button
                 variant="outline"

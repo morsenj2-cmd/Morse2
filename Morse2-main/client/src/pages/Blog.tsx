@@ -1,9 +1,9 @@
 import { Header } from "@/components/Header";
 import { BottomNav } from "@/components/BottomNav";
 import { useState } from "react";
-import { useBlogPosts, useCheckBlogAdmin, useCreateBlogPost, useDeleteBlogPost } from "@/lib/api";
+import { useBlogPosts, useCreateBlogPost, useDeleteBlogPost } from "@/lib/api";
 import { Link } from "wouter";
-import { SignedIn, useUser } from "@clerk/clerk-react";
+import { useUser } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,12 +28,11 @@ const glassHoverStyle = {
 };
 
 export const Blog = (): JSX.Element => {
-  const { isSignedIn } = useUser();
+  const { isSignedIn, user } = useUser();
   const { data: posts = [], isLoading } = useBlogPosts();
-  const { data: adminCheck } = useCheckBlogAdmin();
   const createBlog = useCreateBlogPost();
   const deleteBlog = useDeleteBlogPost();
-  const isAdmin = adminCheck?.isAdmin === true;
+  const isAdmin = user?.primaryEmailAddress?.emailAddress === "prayagbiju78@gmail.com";
 
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [title, setTitle] = useState("");
@@ -75,7 +74,6 @@ export const Blog = (): JSX.Element => {
 
         <div className="relative z-10 max-w-4xl mx-auto">
           <div className="flex items-center justify-end mb-10">
-            <SignedIn>
               {isAdmin && (
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
                   <DialogTrigger asChild>
@@ -144,7 +142,6 @@ export const Blog = (): JSX.Element => {
                   </DialogContent>
                 </Dialog>
               )}
-            </SignedIn>
           </div>
 
           {isLoading ? (
@@ -211,7 +208,7 @@ export const Blog = (): JSX.Element => {
           )}
         </div>
       </main>
-      {isSignedIn && <BottomNav activePage="/blog" />}
+      {isSignedIn && isAdmin && <BottomNav activePage="/blog" />}
     </div>
   );
 };
