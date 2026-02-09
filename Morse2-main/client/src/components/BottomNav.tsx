@@ -1,7 +1,7 @@
 import { UserButton } from "@clerk/clerk-react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Home, MessageSquare, Users, User, Radio, Rocket } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 
 interface BottomNavProps {
@@ -14,14 +14,8 @@ export const BottomNav = ({ activePage }: BottomNavProps): JSX.Element => {
   const menuRef = useRef<HTMLDivElement>(null);
 
   const hamburgerItems = [
-    { name: "Broadcast", path: "/broadcast", icon: Radio },
-    { name: "New launches", path: "/launches", icon: Rocket },
-  ];
-
-  const directTabs = [
-    { name: "Home", path: "/dashboard", icon: Home },
-    { name: "Messages", path: "/messages", icon: MessageSquare },
-    { name: "Communities", path: "/communities", icon: Users },
+    { name: "Broadcast", path: "/broadcast" },
+    { name: "New launches", path: "/launches" },
   ];
 
   const isActive = (path: string) => {
@@ -51,17 +45,16 @@ export const BottomNav = ({ activePage }: BottomNavProps): JSX.Element => {
           <div ref={menuRef} className="relative">
             <button
               onClick={() => setMenuOpen(!menuOpen)}
-              className={`flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg transition-colors ${
-                isHamburgerActive ? "text-teal-400" : "text-gray-400"
+              className={`px-3 py-1.5 rounded-lg transition-colors text-xs font-medium ${
+                isHamburgerActive ? "text-teal-400" : "text-gray-300"
               }`}
             >
-              {menuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              <span className="text-[10px]">More</span>
+              {menuOpen ? <X className="w-5 h-5 mx-auto" /> : <Menu className="w-5 h-5 mx-auto" />}
             </button>
 
             {menuOpen && (
               <div
-                className="absolute bottom-full mb-2 left-0 rounded-xl border border-white/15 px-4 py-3 flex flex-col gap-3 min-w-[160px] shadow-lg"
+                className="absolute bottom-full mb-2 left-0 rounded-xl border border-white/15 px-4 py-3 flex flex-col gap-2 min-w-[160px] shadow-lg"
                 style={{
                   background: "rgba(30, 30, 30, 0.7)",
                   backdropFilter: "blur(12px)",
@@ -71,13 +64,12 @@ export const BottomNav = ({ activePage }: BottomNavProps): JSX.Element => {
                 {hamburgerItems.map((item) => (
                   <Link key={item.name} href={item.path}>
                     <div
-                      className={`flex items-center gap-3 px-2 py-2 rounded-lg transition-colors cursor-pointer ${
+                      className={`px-3 py-2 rounded-lg transition-colors cursor-pointer text-sm ${
                         isActive(item.path) ? "text-teal-400 bg-white/10" : "text-white hover:bg-white/5"
                       }`}
                       onClick={() => setMenuOpen(false)}
                     >
-                      <item.icon className="w-5 h-5" />
-                      <span className="text-sm">{item.name}</span>
+                      {item.name}
                     </div>
                   </Link>
                 ))}
@@ -85,48 +77,31 @@ export const BottomNav = ({ activePage }: BottomNavProps): JSX.Element => {
             )}
           </div>
 
-          {/* Home */}
           <Link href="/dashboard">
-            <div className={`flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg transition-colors ${
-              isActive("/dashboard") ? "text-teal-400" : "text-gray-400"
-            }`}>
-              <Home className="w-5 h-5" />
-              <span className="text-[10px]">Home</span>
-            </div>
+            <span className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              isActive("/dashboard") ? "text-teal-400" : "text-gray-300"
+            }`}>Home</span>
           </Link>
 
-          {/* Messages */}
           <Link href="/messages">
-            <div className={`flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg transition-colors ${
-              isActive("/messages") ? "text-teal-400" : "text-gray-400"
-            }`}>
-              <MessageSquare className="w-5 h-5" />
-              <span className="text-[10px]">Messages</span>
-            </div>
+            <span className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              isActive("/messages") ? "text-teal-400" : "text-gray-300"
+            }`}>Messages</span>
           </Link>
 
-          {/* Communities */}
           <Link href="/communities">
-            <div className={`flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg transition-colors ${
-              isActive("/communities") ? "text-teal-400" : "text-gray-400"
-            }`}>
-              <Users className="w-5 h-5" />
-              <span className="text-[10px]">Groups</span>
-            </div>
+            <span className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              isActive("/communities") ? "text-teal-400" : "text-gray-300"
+            }`}>Groups</span>
           </Link>
 
-          {/* Profile */}
           <Link href="/profile">
-            <div className={`flex flex-col items-center gap-0.5 px-2 py-1 rounded-lg transition-colors ${
-              isActive("/profile") ? "text-teal-400" : "text-gray-400"
-            }`}>
-              <User className="w-5 h-5" />
-              <span className="text-[10px]">Profile</span>
-            </div>
+            <span className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+              isActive("/profile") ? "text-teal-400" : "text-gray-300"
+            }`}>Profile</span>
           </Link>
 
-          {/* Profile Picture */}
-          <div className="flex flex-col items-center gap-0.5 px-1">
+          <div className="px-1">
             <UserButton afterSignOutUrl="/" />
           </div>
         </div>
@@ -166,7 +141,7 @@ export const BottomNav = ({ activePage }: BottomNavProps): JSX.Element => {
       </footer>
 
       {/* Spacer for fixed footer */}
-      <div className="h-16 sm:h-20"></div>
+      <div className="h-14 sm:h-20"></div>
     </>
   );
 };
