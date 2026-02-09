@@ -4,7 +4,7 @@ import { BottomNav } from "@/components/BottomNav";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { useFeed, useFollowRequests, useUserCommunities, useLaunches, useCreatePost, useCurrentUser, useSearchUsers, useLikePost, useRepostPost, useTags, useAcceptFollow, useDeclineFollow } from "@/lib/api";
+import { useFeed, useFollowRequests, useUserCommunities, useLaunches, useCreatePost, useCurrentUser, useSearchUsers, useLikePost, useUnlikePost, useRepostPost, useTags, useAcceptFollow, useDeclineFollow } from "@/lib/api";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
@@ -33,6 +33,7 @@ export const Dashboard = (): JSX.Element => {
   const { data: searchResults = [] } = useSearchUsers(searchQuery);
   const createPost = useCreatePost();
   const likePost = useLikePost();
+  const unlikePost = useUnlikePost();
   const repostPost = useRepostPost();
   const acceptFollow = useAcceptFollow();
   const declineFollow = useDeclineFollow();
@@ -65,8 +66,12 @@ export const Dashboard = (): JSX.Element => {
     });
   };
 
-  const handleLike = async (postId: string) => {
-    await likePost.mutateAsync(postId);
+  const handleLike = async (postId: string, isLiked: boolean) => {
+    if (isLiked) {
+      await unlikePost.mutateAsync(postId);
+    } else {
+      await likePost.mutateAsync(postId);
+    }
   };
 
   const handleRepost = async (postId: string) => {
@@ -380,12 +385,12 @@ export const Dashboard = (): JSX.Element => {
                       <span className="text-sm">{post.repostsCount || 0}</span>
                     </button>
                     <button 
-                      onClick={() => handleLike(post.id)}
-                      disabled={likePost.isPending}
-                      className="text-gray-400 hover:text-red-400 flex items-center gap-2 transition-colors disabled:opacity-50" 
+                      onClick={() => handleLike(post.id, post.isLiked)}
+                      disabled={likePost.isPending || unlikePost.isPending}
+                      className={`flex items-center gap-2 transition-colors disabled:opacity-50 ${post.isLiked ? 'text-red-500' : 'text-gray-400 hover:text-red-400'}`}
                       data-testid={`button-like-${post.id}`}
                     >
-                      <Heart className="w-5 h-5" />
+                      <Heart className={`w-5 h-5 ${post.isLiked ? 'fill-current' : ''}`} />
                       <span className="text-sm">{post.likesCount || 0}</span>
                     </button>
                   </div>

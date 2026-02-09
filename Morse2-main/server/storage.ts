@@ -39,6 +39,7 @@ export interface IStorage {
   deletePost(id: string): Promise<void>;
   likePost(postId: string, userId: string): Promise<void>;
   unlikePost(postId: string, userId: string): Promise<void>;
+  getUserLikes(userId: string): Promise<any[]>;
   repostPost(postId: string, userId: string): Promise<void>;
   getPostComments(postId: string): Promise<any[]>;
   addPostComment(postId: string, userId: string, content: string): Promise<any>;
@@ -514,6 +515,10 @@ export class DatabaseStorage implements IStorage {
         likesCount: (post.likesCount || 0) - 1 
       }).where(eq(posts.id, postId));
     }
+  }
+
+  async getUserLikes(userId: string): Promise<any[]> {
+    return db.select().from(likes).where(eq(likes.userId, userId));
   }
 
   async repostPost(postId: string, userId: string): Promise<void> {

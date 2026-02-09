@@ -140,8 +140,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const user = await storage.getUserByClerkId(userId);
       if (!user) return res.status(404).json({ message: "User not found" });
 
-      const posts = await storage.getFeedPosts(user.id);
-      res.json(posts);
+      const feedPosts = await storage.getFeedPosts(user.id);
+      const userLikes = await storage.getUserLikes(user.id);
+      const likedPostIds = new Set(userLikes.map((l: any) => l.postId));
+      const postsWithLikeStatus = feedPosts.map((post: any) => ({
+        ...post,
+        isLiked: likedPostIds.has(post.id),
+      }));
+      res.json(postsWithLikeStatus);
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
