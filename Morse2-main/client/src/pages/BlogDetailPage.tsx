@@ -14,8 +14,8 @@ export const BlogDetailPage = (): JSX.Element => {
   const { data: post, isLoading } = useBlogPost(slug);
 
   return (
-    <div className="bg-black w-full min-h-screen flex flex-col">
-      <Header />
+    <div className="bg-black w-full min-h-screen flex flex-col pb-20">
+      {!isSignedIn && <Header />}
 
       <main className="flex-1 relative px-4 sm:px-8 py-8 sm:py-12">
         <div className="absolute left-0 top-1/2 -translate-y-1/2 pointer-events-none opacity-50">

@@ -16,13 +16,11 @@ export const Header = (): JSX.Element => {
     { label: "blog", href: "/blog" },
   ];
 
-  const isBlogPage = location === "/blog" || location.startsWith("/blog/");
-
   useEffect(() => {
-    if (isSignedIn && !isBlogPage) {
+    if (isSignedIn) {
       setLocation("/dashboard", { replace: true });
     }
-  }, [isSignedIn, isBlogPage, setLocation]);
+  }, [isSignedIn, setLocation]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {

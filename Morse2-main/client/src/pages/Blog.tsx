@@ -58,8 +58,8 @@ export const Blog = (): JSX.Element => {
   };
 
   return (
-    <div className="bg-black w-full min-h-screen flex flex-col">
-      <Header />
+    <div className="bg-black w-full min-h-screen flex flex-col pb-20">
+      {!isSignedIn && <Header />}
 
       <main className="flex-1 relative px-4 sm:px-8 py-8 sm:py-12">
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
