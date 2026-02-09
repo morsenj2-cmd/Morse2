@@ -13,6 +13,7 @@ export const Header = (): JSX.Element => {
   const navLinks = [
     { label: "about us", href: "/about" },
     { label: "pricing", href: "/pricing" },
+    { label: "blog", href: "/blog" },
   ];
 
   useEffect(() => {
