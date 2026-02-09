@@ -72,11 +72,7 @@ export const Blog = (): JSX.Element => {
         </div>
 
         <div className="relative z-10 max-w-4xl mx-auto">
-          <div className="flex items-center justify-between mb-10">
-            <h1 className="text-white text-4xl sm:text-5xl font-bold" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-              Blog
-            </h1>
-
+          <div className="flex items-center justify-end mb-10">
             <SignedIn>
               {isAdmin && (
                 <Dialog open={isCreateOpen} onOpenChange={setIsCreateOpen}>
