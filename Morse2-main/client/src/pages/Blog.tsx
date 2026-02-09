@@ -1,8 +1,9 @@
 import { Header } from "@/components/Header";
+import { BottomNav } from "@/components/BottomNav";
 import { useState } from "react";
 import { useBlogPosts, useCheckBlogAdmin, useCreateBlogPost, useDeleteBlogPost } from "@/lib/api";
 import { Link } from "wouter";
-import { SignedIn } from "@clerk/clerk-react";
+import { SignedIn, useUser } from "@clerk/clerk-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -27,6 +28,7 @@ const glassHoverStyle = {
 };
 
 export const Blog = (): JSX.Element => {
+  const { isSignedIn } = useUser();
   const { data: posts = [], isLoading } = useBlogPosts();
   const { data: adminCheck } = useCheckBlogAdmin();
   const createBlog = useCreateBlogPost();
@@ -209,6 +211,7 @@ export const Blog = (): JSX.Element => {
           )}
         </div>
       </main>
+      {isSignedIn && <BottomNav activePage="/blog" />}
     </div>
   );
 };

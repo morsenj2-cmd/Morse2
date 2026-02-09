@@ -16,6 +16,7 @@ export const BottomNav = ({ activePage }: BottomNavProps): JSX.Element => {
   const hamburgerItems = [
     { name: "Broadcast", path: "/broadcast" },
     { name: "New launches", path: "/launches" },
+    { name: "Blog", path: "/blog" },
   ];
 
   const isActive = (path: string) => {
@@ -114,6 +115,7 @@ export const BottomNav = ({ activePage }: BottomNavProps): JSX.Element => {
             { name: "Home", path: "/dashboard" },
             { name: "New launches", path: "/launches" },
             { name: "Communities", path: "/communities" },
+            { name: "Blog", path: "/blog" },
           ].map((tab) => (
             <Link key={tab.name} href={tab.path}>
               <Button

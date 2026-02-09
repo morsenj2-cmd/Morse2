@@ -1,10 +1,13 @@
 import { Header } from "@/components/Header";
+import { BottomNav } from "@/components/BottomNav";
 import { useBlogPost } from "@/lib/api";
 import { useRoute, Link } from "wouter";
+import { useUser } from "@clerk/clerk-react";
 import { ArrowLeft, Calendar, User } from "lucide-react";
 import { format } from "date-fns";
 
 export const BlogDetailPage = (): JSX.Element => {
+  const { isSignedIn } = useUser();
   const [, params] = useRoute("/blog/:slug");
   const slug = params?.slug || "";
   const { data: post, isLoading } = useBlogPost(slug);
@@ -99,6 +102,7 @@ export const BlogDetailPage = (): JSX.Element => {
           )}
         </div>
       </main>
+      {isSignedIn && <BottomNav activePage="/blog" />}
     </div>
   );
 };
