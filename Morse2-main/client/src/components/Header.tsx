@@ -16,11 +16,14 @@ export const Header = (): JSX.Element => {
     { label: "blog", href: "/blog" },
   ];
 
+  const publicPages = ["/", "/about", "/pricing", "/blog"];
+  const isPublicPage = publicPages.some(p => location === p || location.startsWith("/blog/"));
+
   useEffect(() => {
-    if (isSignedIn) {
+    if (isSignedIn && !isPublicPage) {
       setLocation("/dashboard", { replace: true });
     }
-  }, [isSignedIn, setLocation]);
+  }, [isSignedIn, isPublicPage, setLocation]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
