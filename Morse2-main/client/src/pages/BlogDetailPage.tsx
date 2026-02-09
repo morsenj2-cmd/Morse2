@@ -30,8 +30,8 @@ export const BlogDetailPage = (): JSX.Element => {
 
         <div className="relative z-10 max-w-3xl mx-auto">
           <Link href="/blog">
-            <a
-              className="inline-flex items-center gap-2 text-white/40 hover:text-white/70 mb-8 transition-all duration-300 text-sm px-4 py-2 rounded-xl"
+            <span
+              className="inline-flex items-center gap-2 text-white/40 hover:text-white/70 mb-8 transition-all duration-300 text-sm px-4 py-2 rounded-xl cursor-pointer"
               style={{
                 background: "rgba(255, 255, 255, 0.03)",
                 border: "1px solid rgba(255, 255, 255, 0.06)",
@@ -39,7 +39,7 @@ export const BlogDetailPage = (): JSX.Element => {
             >
               <ArrowLeft className="w-4 h-4" />
               Back to Blog
-            </a>
+            </span>
           </Link>
 
           {isLoading ? (
