@@ -1,7 +1,7 @@
-import { UserButton } from "@clerk/clerk-react";
 import { Link } from "wouter";
 import { Rocket, ChevronUp, Plus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { BottomNav } from "@/components/BottomNav";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useTodaysLaunches, useYesterdaysLaunches, useRecommendedLaunches, useCreateLaunch, useTags } from "@/lib/api";
@@ -63,12 +63,6 @@ export const LaunchesPage = (): JSX.Element => {
     setIsLaunchDialogOpen(false);
   };
 
-  const navTabs = [
-    { name: "Broadcast", path: "/broadcast", active: false },
-    { name: "Messages", path: "/messages", active: false },
-    { name: "New launches", path: "/launches", active: true },
-    { name: "Communities", path: "/communities", active: false },
-  ];
 
   const LaunchCard = ({ launch, showUpvotes = false }: { launch: any; showUpvotes?: boolean }) => (
     <Link href={`/launches/${launch.id}`}>
@@ -99,7 +93,7 @@ export const LaunchesPage = (): JSX.Element => {
       {/* Header */}
       <header className="w-full px-4 sm:px-8 py-3 sm:py-4 flex items-center justify-between gap-2 border-b border-gray-800">
         <Link href="/dashboard">
-          <div className="text-white text-2xl sm:text-4xl font-bold cursor-pointer" data-testid="link-logo" style={{ fontFamily: "'Arimo', sans-serif" }}>
+          <div className="text-white text-3xl sm:text-5xl font-bold cursor-pointer" data-testid="link-logo" style={{ fontFamily: "'Arimo', sans-serif" }}>
             .--.
           </div>
         </Link>
@@ -310,27 +304,7 @@ export const LaunchesPage = (): JSX.Element => {
         )}
       </div>
 
-      {/* Bottom Navigation - Fixed at bottom */}
-      <footer className="fixed bottom-0 left-0 right-0 z-50 bg-[#1a1a1a] w-full px-2 sm:px-8 py-2 sm:py-4 flex flex-wrap items-center justify-between sm:justify-center gap-1 sm:gap-4 border-t border-gray-800">
-        {navTabs.map((tab) => (
-          <Link key={tab.name} href={tab.path}>
-            <Button
-              variant="outline"
-              className={`${tab.active ? "bg-teal-700 border-teal-600" : "bg-[#3a3a3a] border-gray-600"} text-white hover:bg-gray-600 rounded-lg px-2 sm:px-6 py-1.5 sm:py-2 text-[11px] sm:text-sm whitespace-nowrap`}
-              data-testid={`button-nav-${tab.name.toLowerCase().replace(/\s/g, '-')}`}
-            >
-              {tab.name}
-            </Button>
-          </Link>
-        ))}
-        <Link href="/profile">
-          <span className="text-white cursor-pointer hover:text-gray-300 text-[11px] sm:text-sm whitespace-nowrap" data-testid="link-profile">Profile</span>
-        </Link>
-        <UserButton afterSignOutUrl="/" />
-      </footer>
-
-      {/* Spacer for fixed footer */}
-      <div className="h-16 sm:h-20"></div>
+      <BottomNav activePage="New launches" />
     </div>
   );
 };
