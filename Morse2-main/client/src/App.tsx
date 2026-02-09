@@ -1,10 +1,11 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, Redirect } from "wouter";
 import { SignedIn, SignedOut, RedirectToSignIn } from "@clerk/clerk-react";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
+import { useCurrentUser } from "@/lib/api";
 
 import { Desktop } from "@/pages/Desktop";
 import { AboutUs } from "@/pages/AboutUs";
@@ -23,11 +24,29 @@ import { ThreadDetailPage } from "@/pages/ThreadDetailPage";
 import { OnboardingTagsPage } from "@/pages/OnboardingTagsPage";
 import { SearchResultsPage } from "@/pages/SearchResultsPage";
 
-function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
+function OnboardingGuard({ component: Component }: { component: React.ComponentType }) {
+  const { data: currentUser, isLoading } = useCurrentUser();
+
+  if (isLoading) {
+    return (
+      <div className="bg-[#1a1a1a] w-full min-h-screen flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-2 border-teal-500 border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
+
+  if (currentUser && !currentUser.onboardingComplete) {
+    return <Redirect to="/onboarding/tags" />;
+  }
+
+  return <Component />;
+}
+
+function ProtectedRoute({ component: Component, skipOnboardingCheck }: { component: React.ComponentType; skipOnboardingCheck?: boolean }) {
   return (
     <>
       <SignedIn>
-        <Component />
+        {skipOnboardingCheck ? <Component /> : <OnboardingGuard component={Component} />}
       </SignedIn>
       <SignedOut>
         <RedirectToSignIn />
@@ -44,7 +63,7 @@ function Router() {
       <Route path="/pricing" component={Pricing} />
       <Route path="/blog" component={Blog} />
       <Route path="/onboarding/tags">
-        <ProtectedRoute component={OnboardingTagsPage} />
+        <ProtectedRoute component={OnboardingTagsPage} skipOnboardingCheck />
       </Route>
       <Route path="/dashboard">
         <ProtectedRoute component={Dashboard} />

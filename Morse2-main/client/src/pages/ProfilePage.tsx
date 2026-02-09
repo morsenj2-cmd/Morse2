@@ -47,7 +47,7 @@ export const ProfilePage = (): JSX.Element => {
   };
 
   useEffect(() => {
-    if (!userLoading && currentUser && (!currentUser.onboardingComplete || (currentUser.tags?.length || 0) < 20)) {
+    if (!userLoading && currentUser && !currentUser.onboardingComplete) {
       setLocation("/onboarding/tags");
     }
   }, [currentUser, userLoading, setLocation]);
