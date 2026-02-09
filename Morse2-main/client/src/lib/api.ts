@@ -578,6 +578,54 @@ export function useAddThreadComment() {
   });
 }
 
+// Blog
+export function useBlogPosts() {
+  return useQuery({
+    queryKey: ["blog"],
+    queryFn: () => fetch(`${API_BASE}/blog`).then(r => r.json()),
+  });
+}
+
+export function useBlogPost(slug: string) {
+  return useQuery({
+    queryKey: ["blog", slug],
+    queryFn: () => fetch(`${API_BASE}/blog/${slug}`).then(r => r.json()),
+    enabled: !!slug,
+  });
+}
+
+export function useCheckBlogAdmin() {
+  return useQuery({
+    queryKey: ["blog-admin"],
+    queryFn: () => fetchWithAuth(`${API_BASE}/blog/check-admin`),
+  });
+}
+
+export function useCreateBlogPost() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: { title: string; content: string; excerpt?: string; coverImageUrl?: string }) =>
+      fetchWithAuth(`${API_BASE}/blog`, {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["blog"] });
+    },
+  });
+}
+
+export function useDeleteBlogPost() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) =>
+      fetchWithAuth(`${API_BASE}/blog/${id}`, { method: "DELETE" }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["blog"] });
+    },
+  });
+}
+
 // Broadcasts - sends messages as DMs to matching recipients
 export function useSendBroadcast() {
   const queryClient = useQueryClient();

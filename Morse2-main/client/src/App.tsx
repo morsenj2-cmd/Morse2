@@ -11,6 +11,7 @@ import { Desktop } from "@/pages/Desktop";
 import { AboutUs } from "@/pages/AboutUs";
 import { Pricing } from "@/pages/Pricing";
 import { Blog } from "@/pages/Blog";
+import { BlogDetailPage } from "@/pages/BlogDetailPage";
 import { Dashboard } from "@/pages/Dashboard";
 import { BroadcastPage } from "@/pages/BroadcastPage";
 import { LaunchesPage } from "@/pages/LaunchesPage";
@@ -62,6 +63,7 @@ function Router() {
       <Route path="/about" component={AboutUs} />
       <Route path="/pricing" component={Pricing} />
       <Route path="/blog" component={Blog} />
+      <Route path="/blog/:slug" component={BlogDetailPage} />
       <Route path="/onboarding/tags">
         <ProtectedRoute component={OnboardingTagsPage} skipOnboardingCheck />
       </Route>

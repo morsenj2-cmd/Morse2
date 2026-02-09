@@ -2,12 +2,12 @@ import {
   users, tags, userTags, posts, postTags, communities, communityTags, 
   communityMembers, follows, likes, comments, launches, launchTags, launchUpvotes,
   conversations, messages, threads, threadComments,
-  broadcasts, broadcastTags, broadcastRecipients,
+  broadcasts, broadcastTags, broadcastRecipients, blogPosts,
   type User, type InsertUser, type Tag, type InsertTag, 
   type Post, type InsertPost, type Community, type InsertCommunity,
   type Follow, type InsertFollow, type Launch, type InsertLaunch,
   type Conversation, type Message, type Thread, type ThreadComment,
-  type Broadcast, type InsertBroadcast
+  type Broadcast, type InsertBroadcast, type BlogPost, type InsertBlogPost
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc, inArray, or, sql, gte, lt } from "drizzle-orm";
@@ -99,6 +99,12 @@ export interface IStorage {
   
   // Broadcasts (sends as DMs to matching recipients)
   sendBroadcast(senderId: string, content: string, tagNames: string[], city?: string): Promise<{ recipientCount: number }>;
+
+  // Blog
+  getBlogPosts(): Promise<(BlogPost & { author: User })[]>;
+  getBlogPostBySlug(slug: string): Promise<(BlogPost & { author: User }) | undefined>;
+  createBlogPost(blogPost: InsertBlogPost): Promise<BlogPost>;
+  deleteBlogPost(id: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -852,6 +858,35 @@ export class DatabaseStorage implements IStorage {
     }
 
     return { recipientCount: eligibleUserIds.length };
+  }
+
+  async getBlogPosts(): Promise<(BlogPost & { author: User })[]> {
+    const results = await db
+      .select({ blogPost: blogPosts, author: users })
+      .from(blogPosts)
+      .innerJoin(users, eq(blogPosts.authorId, users.id))
+      .where(eq(blogPosts.published, true))
+      .orderBy(desc(blogPosts.createdAt));
+    return results.map(r => ({ ...r.blogPost, author: r.author }));
+  }
+
+  async getBlogPostBySlug(slug: string): Promise<(BlogPost & { author: User }) | undefined> {
+    const [result] = await db
+      .select({ blogPost: blogPosts, author: users })
+      .from(blogPosts)
+      .innerJoin(users, eq(blogPosts.authorId, users.id))
+      .where(eq(blogPosts.slug, slug));
+    if (!result) return undefined;
+    return { ...result.blogPost, author: result.author };
+  }
+
+  async createBlogPost(blogPost: InsertBlogPost): Promise<BlogPost> {
+    const [post] = await db.insert(blogPosts).values(blogPost).returning();
+    return post;
+  }
+
+  async deleteBlogPost(id: string): Promise<void> {
+    await db.delete(blogPosts).where(eq(blogPosts.id, id));
   }
 }
 

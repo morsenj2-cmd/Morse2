@@ -171,6 +171,20 @@ export const threadComments = pgTable("thread_comments", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Blog posts - admin-only content for SEO
+export const blogPosts = pgTable("blog_posts", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  authorId: varchar("author_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  slug: text("slug").notNull().unique(),
+  content: text("content").notNull(),
+  excerpt: text("excerpt"),
+  coverImageUrl: text("cover_image_url"),
+  published: boolean("published").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Broadcasts - messages sent to users with matching tags
 export const broadcasts = pgTable("broadcasts", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -298,6 +312,10 @@ export const threadCommentsRelations = relations(threadComments, ({ one }) => ({
   author: one(users, { fields: [threadComments.authorId], references: [users.id] }),
 }));
 
+export const blogPostsRelations = relations(blogPosts, ({ one }) => ({
+  author: one(users, { fields: [blogPosts.authorId], references: [users.id] }),
+}));
+
 // Zod schemas for validation
 export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true });
 export const insertTagSchema = createInsertSchema(tags).omit({ id: true, createdAt: true });
@@ -309,6 +327,7 @@ export const insertConversationSchema = createInsertSchema(conversations).omit({
 export const insertMessageSchema = createInsertSchema(messages).omit({ id: true, createdAt: true, read: true });
 export const insertThreadSchema = createInsertSchema(threads).omit({ id: true, createdAt: true, commentsCount: true });
 export const insertThreadCommentSchema = createInsertSchema(threadComments).omit({ id: true, createdAt: true });
+export const insertBlogPostSchema = createInsertSchema(blogPosts).omit({ id: true, createdAt: true, updatedAt: true });
 export const insertBroadcastSchema = createInsertSchema(broadcasts).omit({ id: true, createdAt: true });
 
 // Types
@@ -334,5 +353,7 @@ export type Thread = typeof threads.$inferSelect;
 export type InsertThread = z.infer<typeof insertThreadSchema>;
 export type ThreadComment = typeof threadComments.$inferSelect;
 export type InsertThreadComment = z.infer<typeof insertThreadCommentSchema>;
+export type BlogPost = typeof blogPosts.$inferSelect;
+export type InsertBlogPost = z.infer<typeof insertBlogPostSchema>;
 export type Broadcast = typeof broadcasts.$inferSelect;
 export type InsertBroadcast = z.infer<typeof insertBroadcastSchema>;

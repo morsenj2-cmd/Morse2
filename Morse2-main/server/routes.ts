@@ -937,6 +937,98 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  const ADMIN_EMAIL = "prayagbiju78@gmail.com";
+
+  app.get("/api/blog", async (req: Request, res: Response) => {
+    try {
+      const posts = await storage.getBlogPosts();
+      res.json(posts);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/blog/check-admin", requireAuth(), async (req: Request, res: Response) => {
+    try {
+      const { userId } = getAuth(req);
+      if (!userId) return res.status(401).json({ message: "Unauthorized" });
+      const clerkUser = await clerkClient.users.getUser(userId);
+      const email = clerkUser.emailAddresses?.[0]?.emailAddress;
+      res.json({ isAdmin: email === ADMIN_EMAIL });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/blog/:slug", async (req: Request, res: Response) => {
+    try {
+      const post = await storage.getBlogPostBySlug(req.params.slug);
+      if (!post) return res.status(404).json({ message: "Blog post not found" });
+      res.json(post);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.post("/api/blog", requireAuth(), async (req: Request, res: Response) => {
+    try {
+      const { userId } = getAuth(req);
+      if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+      const clerkUser = await clerkClient.users.getUser(userId);
+      const email = clerkUser.emailAddresses?.[0]?.emailAddress;
+      if (email !== ADMIN_EMAIL) {
+        return res.status(403).json({ message: "Only the admin can create blog posts" });
+      }
+
+      const user = await storage.getUserByClerkId(userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      const { title, content, excerpt, coverImageUrl } = req.body;
+      if (!title || !content) {
+        return res.status(400).json({ message: "Title and content are required" });
+      }
+
+      const slug = title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "")
+        + "-" + Date.now().toString(36);
+
+      const post = await storage.createBlogPost({
+        authorId: user.id,
+        title,
+        slug,
+        content,
+        excerpt: excerpt || content.substring(0, 200),
+        coverImageUrl: coverImageUrl || null,
+        published: true,
+      });
+
+      res.json(post);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.delete("/api/blog/:id", requireAuth(), async (req: Request, res: Response) => {
+    try {
+      const { userId } = getAuth(req);
+      if (!userId) return res.status(401).json({ message: "Unauthorized" });
+
+      const clerkUser = await clerkClient.users.getUser(userId);
+      const email = clerkUser.emailAddresses?.[0]?.emailAddress;
+      if (email !== ADMIN_EMAIL) {
+        return res.status(403).json({ message: "Only the admin can delete blog posts" });
+      }
+
+      await storage.deleteBlogPost(req.params.id);
+      res.json({ success: true });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
