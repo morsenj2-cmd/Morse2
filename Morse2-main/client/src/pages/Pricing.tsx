@@ -1,9 +1,13 @@
 import { Header } from "@/components/Header";
+import { PublicHeader } from "@/components/PublicHeader";
+import { ClerkGuard } from "@/components/ErrorBoundary";
 
 export const Pricing = (): JSX.Element => {
   return (
     <div className="bg-black w-full min-h-screen flex flex-col">
-      <Header />
+      <ClerkGuard fallback={<PublicHeader />}>
+        <Header />
+      </ClerkGuard>
 
       <main className="flex-1 flex items-center justify-center relative px-8">
         {/* Purple spiral decorative image */}

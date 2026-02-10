@@ -1,9 +1,13 @@
 import { Header } from "@/components/Header";
+import { PublicHeader } from "@/components/PublicHeader";
+import { ClerkGuard } from "@/components/ErrorBoundary";
 
 export const AboutUs = (): JSX.Element => {
   return (
     <div className="bg-black w-full min-h-screen flex flex-col">
-      <Header />
+      <ClerkGuard fallback={<PublicHeader />}>
+        <Header />
+      </ClerkGuard>
 
       <main className="flex-1 relative px-8 py-12">
         {/* Purple spiral positioned to the left */}
