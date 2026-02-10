@@ -37,14 +37,20 @@ function AdminControls({ onDelete }: { onDelete: (id: string, e: React.MouseEven
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [excerpt, setExcerpt] = useState("");
+  const [error, setError] = useState("");
 
   const handleCreate = async () => {
     if (!title.trim() || !content.trim()) return;
-    await createBlog.mutateAsync({ title, content, excerpt: excerpt || undefined });
-    setTitle("");
-    setContent("");
-    setExcerpt("");
-    setIsCreateOpen(false);
+    setError("");
+    try {
+      await createBlog.mutateAsync({ title, content, excerpt: excerpt || undefined });
+      setTitle("");
+      setContent("");
+      setExcerpt("");
+      setIsCreateOpen(false);
+    } catch (err: any) {
+      setError(err?.message || "Failed to publish. Please try again.");
+    }
   };
 
   if (!isAdmin) return null;
@@ -101,6 +107,9 @@ function AdminControls({ onDelete }: { onDelete: (id: string, e: React.MouseEven
               className="bg-white/5 border-white/10 text-white h-64 rounded-xl focus:border-white/30 placeholder:text-white/30"
             />
           </div>
+          {error && (
+            <p className="text-red-400 text-sm px-1">{error}</p>
+          )}
           <button
             onClick={handleCreate}
             disabled={!title.trim() || !content.trim() || createBlog.isPending}

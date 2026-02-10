@@ -988,8 +988,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Only the admin can create blog posts" });
       }
 
-      const user = await storage.getUserByClerkId(userId);
-      if (!user) return res.status(404).json({ message: "User not found" });
+      let user = await storage.getUserByClerkId(userId);
+      if (!user) {
+        const firstName = clerkUser.firstName || "";
+        const lastName = clerkUser.lastName || "";
+        const displayName = `${firstName} ${lastName}`.trim() || email?.split("@")[0] || "Admin";
+        const username = clerkUser.username || email?.split("@")[0] || `user_${Date.now()}`;
+        user = await storage.createUser({
+          clerkId: userId,
+          displayName,
+          username,
+          onboardingComplete: true,
+        });
+      }
 
       const { title, content, excerpt, coverImageUrl } = req.body;
       if (!title || !content) {
@@ -1014,7 +1025,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       res.json(post);
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      console.error("Blog create error:", error);
+      res.status(500).json({ message: "Failed to create blog post: " + error.message });
     }
   });
 
