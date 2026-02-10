@@ -14,7 +14,12 @@ async function fetchWithAuth(url: string, options: RequestInit = {}) {
   });
   
   if (!response.ok) {
-    throw new Error(`API error: ${response.statusText}`);
+    let msg = response.statusText || "Server error";
+    try {
+      const body = await response.json();
+      if (body?.message) msg = body.message;
+    } catch {}
+    throw new Error(msg);
   }
   
   return response.json();
