@@ -948,9 +948,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/blog", async (req: Request, res: Response) => {
     try {
       const posts = await storage.getBlogPosts();
-      res.json(posts);
+      res.json(Array.isArray(posts) ? posts : []);
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      console.error("Blog API error:", error);
+      res.json([]);
     }
   });
 

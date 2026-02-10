@@ -161,8 +161,10 @@ function AuthAwareHeader() {
 }
 
 export const Blog = (): JSX.Element => {
-  const { data: posts = [], isLoading } = useBlogPosts();
+  const { data: posts, isLoading, isError } = useBlogPosts();
   const [hoveredId, setHoveredId] = useState<string | null>(null);
+
+  const safePosts = Array.isArray(posts) ? posts : [];
 
   return (
     <div className="bg-black w-full min-h-screen flex flex-col pb-20">
@@ -192,7 +194,16 @@ export const Blog = (): JSX.Element => {
             <div className="flex justify-center py-16">
               <div className="animate-spin w-8 h-8 border-2 border-white/30 border-t-white rounded-full"></div>
             </div>
-          ) : posts.length === 0 ? (
+          ) : isError ? (
+            <div className="text-center py-20">
+              <div
+                className="inline-block px-8 py-6 rounded-3xl"
+                style={glassStyle}
+              >
+                <p className="text-white/50 text-lg">Unable to load blog posts. Please try again later.</p>
+              </div>
+            </div>
+          ) : safePosts.length === 0 ? (
             <div className="text-center py-20">
               <div
                 className="inline-block px-8 py-6 rounded-3xl"
@@ -203,7 +214,7 @@ export const Blog = (): JSX.Element => {
             </div>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2">
-              {posts.map((post: any) => (
+              {safePosts.map((post: any) => (
                 <Link key={post.id} href={`/blog/${post.slug}`}>
                   <article
                     className="rounded-2xl p-6 transition-all duration-300 cursor-pointer group"

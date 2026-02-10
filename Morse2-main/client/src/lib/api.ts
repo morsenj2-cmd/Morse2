@@ -582,14 +582,14 @@ export function useAddThreadComment() {
 export function useBlogPosts() {
   return useQuery({
     queryKey: ["blog"],
-    queryFn: () => fetch(`${API_BASE}/blog`).then(r => r.json()),
+    queryFn: () => fetchPublic(`${API_BASE}/blog`),
   });
 }
 
 export function useBlogPost(slug: string) {
   return useQuery({
     queryKey: ["blog", slug],
-    queryFn: () => fetch(`${API_BASE}/blog/${slug}`).then(r => r.json()),
+    queryFn: () => fetchPublic(`${API_BASE}/blog/${slug}`),
     enabled: !!slug,
   });
 }
