@@ -54,6 +54,23 @@ app.use((req, res, next) => {
 (async () => {
   try {
     await pool.query(`
+      DO $$ BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM pg_constraint WHERE conname = 'communities_name_unique'
+        ) THEN
+          ALTER TABLE communities ADD CONSTRAINT communities_name_unique UNIQUE (name);
+        END IF;
+      EXCEPTION WHEN others THEN
+        RAISE NOTICE 'Could not add communities_name_unique: %', SQLERRM;
+      END $$;
+    `);
+    console.log("communities constraints ensured");
+  } catch (err) {
+    console.error("Could not ensure communities constraints:", err);
+  }
+
+  try {
+    await pool.query(`
       CREATE TABLE IF NOT EXISTS blog_posts (
         id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid(),
         author_id VARCHAR NOT NULL REFERENCES users(id) ON DELETE CASCADE,
