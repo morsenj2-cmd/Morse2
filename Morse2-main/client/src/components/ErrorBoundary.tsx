@@ -47,6 +47,38 @@ export class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoun
   }
 }
 
+interface RecoverableErrorBoundaryProps {
+  children: React.ReactNode;
+  onRecover: () => void;
+}
+
+interface RecoverableErrorBoundaryState {
+  hasError: boolean;
+}
+
+export class RecoverableErrorBoundary extends React.Component<RecoverableErrorBoundaryProps, RecoverableErrorBoundaryState> {
+  constructor(props: RecoverableErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError(): RecoverableErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error) {
+    console.error("Clerk error caught, recovering without auth:", error.message);
+    this.props.onRecover();
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return null;
+    }
+    return this.props.children;
+  }
+}
+
 export function ClerkGuard({ children, fallback }: { children: React.ReactNode; fallback?: React.ReactNode }) {
   return <ErrorBoundary fallback={fallback || null}>{children}</ErrorBoundary>;
 }

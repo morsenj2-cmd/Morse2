@@ -34,8 +34,14 @@ const upload = multer({
 });
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Apply Clerk middleware for authentication
-  app.use(clerkMiddleware());
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    try {
+      clerkMiddleware()(req, res, next);
+    } catch (err) {
+      console.error("Clerk middleware error:", err);
+      next();
+    }
+  });
   
   // Register object storage routes for file uploads
   registerObjectStorageRoutes(app);
