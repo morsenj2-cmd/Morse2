@@ -66,6 +66,7 @@ export const Header = (): JSX.Element => {
             <Button
               variant="outline"
               className="bg-gray-700 text-white border-gray-600 hover:bg-gray-600 rounded-full px-4 sm:px-6 h-auto py-2 text-sm sm:text-base"
+              aria-label="Sign in or sign up"
             >
               log in/sign up
             </Button>
@@ -73,6 +74,7 @@ export const Header = (): JSX.Element => {
 
           <button
             className="sm:hidden text-white p-1"
+            aria-label="Toggle navigation menu"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}

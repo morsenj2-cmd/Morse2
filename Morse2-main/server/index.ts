@@ -7,8 +7,58 @@ import { setupVite, serveStatic, log } from "./vite";
 import { seedTagsIfEmpty } from "./storage";
 import { pool } from "./db";
 import path from "path";
+import helmet from 'helmet';
 
 const app = express();
+
+// Add security headers
+app.use(helmet());
+
+// Content Security Policy (CSP)
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https://morse.co.in"],
+      connectSrc: ["'self'", "https://clerk.morse.co.in"],
+    },
+  })
+);
+
+// HSTS
+app.use(
+  helmet.hsts({
+    maxAge: 31536000, // 1 year
+    includeSubDomains: true,
+    preload: true,
+  })
+);
+
+// COOP
+app.use(
+  helmet.crossOriginOpenerPolicy({
+    policy: "same-origin",
+  })
+);
+
+// X-Frame-Options
+app.use(
+  helmet.frameguard({
+    action: "deny",
+  })
+);
+
+// Trusted Types
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      "require-trusted-types-for": ["'script'"]
+    },
+  })
+);
 
 // Serve uploaded files from client/public/uploads directory
 app.use("/uploads", express.static(path.resolve(import.meta.dirname, "..", "client", "public", "uploads")));
