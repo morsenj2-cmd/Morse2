@@ -81,8 +81,8 @@ function ProtectedRoute({ component: Component, skipOnboardingCheck }: { compone
 function Router() {
   return (
     <Switch>
-      <Route path="/sign-in" component={SignInPage} />
-      <Route path="/sign-up" component={SignUpPage} />
+      <Route path="/sign-in/:rest*" component={SignInPage} />
+      <Route path="/sign-up/:rest*" component={SignUpPage} />
       <Route path="/" component={Desktop} />
       <Route path="/about" component={AboutUs} />
       <Route path="/pricing" component={Pricing} />
