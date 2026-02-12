@@ -13,6 +13,8 @@ import { Desktop } from "@/pages/Desktop";
 import { AboutUs } from "@/pages/AboutUs";
 import { Pricing } from "@/pages/Pricing";
 import { Blog } from "@/pages/Blog";
+import SignInPage from "./pages/SignIn";
+import SignUpPage from "./pages/SignUp";
 import { BlogDetailPage } from "@/pages/BlogDetailPage";
 import { Dashboard } from "@/pages/Dashboard";
 import { BroadcastPage } from "@/pages/BroadcastPage";
@@ -79,6 +81,8 @@ function ProtectedRoute({ component: Component, skipOnboardingCheck }: { compone
 function Router() {
   return (
     <Switch>
+      <Route path="/sign-in" component={SignInPage} />
+      <Route path="/sign-up" component={SignUpPage} />
       <Route path="/" component={Desktop} />
       <Route path="/about" component={AboutUs} />
       <Route path="/pricing" component={Pricing} />
